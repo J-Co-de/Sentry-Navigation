@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@mapbox/polyline": "^1.2.1",
+    "@valhallajs/valhallajs": "^3.7.0",
+    "cors": "^2.8.6",
+    "polyline": "^0.2.0"
+  }
+}
