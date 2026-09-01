@@ -1,0 +1,6 @@
+valhalla/routing-valhalla/valhalla_tiles/
+valhalla/routing-valhalla/*.tar
+valhalla/routing-valhalla/*.pbf
+valhalla/routing-valhalla/*.sqlite
+valhalla/routing-valhalla/elevation_data/
+Safety-Navigation/node_modules/
