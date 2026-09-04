@@ -1,91 +1,121 @@
 :root {
-    /* Brand */
-    --brand-primary: oklch(0.58 0.14 275);
-    /* Safety Indigo */
-    --brand-secondary: oklch(0.72 0.10 210);
-    /* Calm Teal */
-    --brand-accent: oklch(0.85 0.12 150);
-    /* Guidance Mint */
+    /* Primary Actions */
+    --color-primary: oklch(0.63 0.20 264);
+    --color-primary-hover: oklch(0.58 0.20 264);
+    --color-primary-active: oklch(0.53 0.20 264);
 
-    /* Safety States */
-    --brand-safe: oklch(0.85 0.12 150);
-    --brand-caution: oklch(0.88 0.18 95);
-    --brand-danger: oklch(0.68 0.22 30);
+    /* Status */
+    --color-success: oklch(0.78 0.17 146);
+    --color-warning: oklch(0.88 0.18 95);
+    --color-danger: oklch(0.70 0.23 30);
 
-    /* Neutrals */
-    --brand-surface: oklch(0.96 0.01 240);
-    --brand-surface-alt: oklch(0.93 0.01 250);
-    --brand-text: oklch(0.22 0.01 260);
-    --brand-text-muted: oklch(0.45 0.01 260);
+    /* Surfaces */
+    --color-surface: oklch(0.96 0.01 240);
+    --color-surface-alt: oklch(0.93 0.01 250);
+    --color-surface-muted: oklch(0.89 0.01 250);
+
+    /* Text */
+    --color-text: oklch(0.22 0.01 260);
+    --color-text-muted: oklch(0.45 0.01 260);
+    --color-text-inverse: oklch(0.96 0.01 240);
+
+    /* Borders */
+    --color-border: oklch(0.75 0.01 260);
+    --color-border-strong: oklch(0.63 0.01 260);
+
+    /* Inputs */
+    --color-input-bg: oklch(0.96 0.01 240);
+    --color-input-border: oklch(0.75 0.01 260);
+    --color-input-focus: oklch(0.63 0.20 264);
+
+    /* Overlay */
+    --color-overlay: oklch(0.22 0.01 260 / 0.6);
+
+    /* Dark Mode */
+    --color-dark-surface: oklch(0.22 0.01 260);
+    --color-dark-surface-alt: oklch(0.28 0.01 260);
+    --color-dark-surface-muted: oklch(0.35 0.01 260);
+    --color-dark-text: oklch(0.96 0.01 240);
+    --color-dark-text-muted: oklch(0.75 0.01 260);
+    --color-dark-input-bg: oklch(0.28 0.01 260);
+    --color-dark-input-border: oklch(0.50 0.01 260);
+    --color-dark-input-focus: oklch(0.80 0.20 240);
+    --color-dark-overlay: oklch(0.22 0.01 260 / 0.7);
+
+
+    --font-xs: 0.75rem;
+    /* 12px  - tiny labels, badges */
+    --font-sm: 0.875rem;
+    /* 14px  - secondary text */
+    --font-md: 1rem;
+    /* 16px  - body text */
+    --font-lg: 1.125rem;
+    /* 18px  - section headers */
+    --font-xl: 1.25rem;
+    /* 20px  - small titles */
+    --font-2xl: 1.5rem;
+    /* 24px  - page titles */
+    --font-3xl: 1.875rem;
+    /* 30px  - hero text */
 }
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    border: none;
+}
 
-
-
+html,
 body {
     margin: 0;
+    padding: 0;
+}
 
-    main {
-        display: flex;
+body {
+    min-height: 100vh;
+    line-height: 1.5;
+}
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
 
-        .maplibregl-ctrl-attrib {
-            pointer-events: none;
-        }
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
 
-        .map {
-            width: 100%;
-            height: 100vh;
-        }
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
 
-        .point-display {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--brand-surface);
+button {
+    cursor: pointer;
+    background: transparent;
 
-            svg {
-                width: 1.5rem;
-                height: 1.5rem;
-                color: var(--ui-text);
-            }
+}
 
-            .ui-action-list {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 0;
+img,
+picture,
+svg,
+canvas {
+    display: block;
+    max-width: 100%;
+}
 
-                li {
-
-
-                    list-style: none;
-
-                    &>button {
-                        padding: 0.6rem;
-                        margin: 0.4rem;
-                    }
-
-                    .hamburger-button {
-                        svg {
-                            color: var(--brand-primary);
-                        }
-                    }
-
-                    button {
-                        background: transparent;
-                        border: none;
-                    }
-                }
-            }
-
-
-
-            .logo {
-                border-top: 2px solid var(--ui-text-muted);
-                padding: 1rem 0;
-            }
-        }
-    }
+a {
+    color: inherit;
+    text-decoration: none;
 }

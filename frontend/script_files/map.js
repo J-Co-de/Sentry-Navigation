@@ -8,31 +8,13 @@ const markers = new Map();
 
 export const map = new maplibregl.Map({
   container: "map",
-  style: {
-    version: 8,
-    sources: {
-      osm: {
-        type: "raster",
-        tiles: [
-          "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-          "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
-          "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        ],
-        tileSize: 256,
-        attribution: "&copy; OpenStreetMap contributors",
-      },
-    },
-    layers: [
-      {
-        id: "osm-layer",
-        type: "raster",
-        source: "osm",
-      },
-    ],
-  },
+  style:
+    "https://api.maptiler.com/maps/streets-v2-dark/style.json?key=Ejb6rQSPI4GfmBnOhiEQ",
   center: [-95.9928, 36.0607],
   zoom: 11,
 });
+
+// Add user's current position as the first pinned point
 
 map.on("click", (e) => {
   const { lng, lat } = e.lngLat;
@@ -50,7 +32,7 @@ map.on("click", (e) => {
 
   marker.on("dragend", () => {
     const lngLat = marker.getLngLat();
-    const idx = pinnedPoints.findIndex(p => p.markerId === markerId);
+    const idx = pinnedPoints.findIndex((p) => p.markerId === markerId);
     if (idx !== -1) {
       pinnedPoints[idx].lng = lngLat.lng;
       pinnedPoints[idx].lat = lngLat.lat;
@@ -62,7 +44,7 @@ map.on("click", (e) => {
   });
 
   marker.getElement().addEventListener("click", function (e) {
-    const idx = pinnedPoints.findIndex(p => p.markerId === markerId);
+    const idx = pinnedPoints.findIndex((p) => p.markerId === markerId);
     if (idx !== -1) pinnedPoints.splice(idx, 1);
     markers.delete(markerId);
     marker.remove();
@@ -76,7 +58,7 @@ map.on("click", (e) => {
 export async function fetchRoute() {
   if (pinnedPoints.length < 2) return;
 
-  const locations = pinnedPoints.map(p => ({ lat: p.lat, lon: p.lng }));
+  const locations = pinnedPoints.map((p) => ({ lat: p.lat, lon: p.lng }));
 
   const response = await fetch("http://localhost:3000/route", {
     method: "POST",
@@ -104,7 +86,9 @@ export async function fetchRoute() {
       continue;
     }
     // Valhalla encodes polyline at precision 6
-    const decoded = polyline.decode(leg.shape, 6).map(([lat, lon]) => [lon, lat]);
+    const decoded = polyline
+      .decode(leg.shape, 6)
+      .map(([lat, lon]) => [lon, lat]);
     console.log(`Decoded ${decoded.length} points from leg shape`);
     coords.push(...decoded);
   }
