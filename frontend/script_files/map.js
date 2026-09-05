@@ -125,7 +125,7 @@ function drawRoute(coords) {
         type: "line",
         source: "route",
         paint: {
-          "line-color": "#00aaff",
+          "line-color": "#3DB9FF",
           "line-width": 5,
         },
       });

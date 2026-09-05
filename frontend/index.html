@@ -17,9 +17,9 @@
   </head>
   <body>
     <main>
-      <div class="search-card">
-        <div>
-          <input type="text" />
+      <div id="search-card" class="search-card">
+        <div id="input" class="input">
+          <input type="text" placeholder="Search places / addresses" />
           <button class="search">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,11 @@
             </svg>
           </button>
         </div>
-        
+        <div id="output" class="output">
+          <ul>
+            
+          </ul>
+        </div>
       </div>
       <div id="map" class="map"></div>
     </main>
