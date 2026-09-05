@@ -1,4 +1,6 @@
-import polyline from "https://cdn.skypack.dev/@mapbox/polyline";
+import polyline from "@mapbox/polyline";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 export let pinnedPoints = [];
 export let route = {};
@@ -60,7 +62,7 @@ export async function fetchRoute() {
 
   const locations = pinnedPoints.map((p) => ({ lat: p.lat, lon: p.lng }));
 
-  const response = await fetch("http://localhost:3000/route", {
+  const response = await fetch("/route", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

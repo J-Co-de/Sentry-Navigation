@@ -1,8 +1,9 @@
 {
-  "dependencies": {
-    "@mapbox/polyline": "^1.2.1",
-    "@valhallajs/valhallajs": "^3.7.0",
-    "cors": "^2.8.6",
-    "polyline": "^0.2.0"
+  "private": true,
+  "workspaces": ["client", "server"],
+  "scripts": {
+    "dev": "npm run dev --workspace=client",
+    "server": "npm run start --workspace=server",
+    "build": "npm run build --workspace=client"
   }
 }

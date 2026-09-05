@@ -1,6 +1,10 @@
-const mapScript = await import("./script_files/map.js");
-const weatherScript = await import("./script_files/weather.js");
-const nativeScript = await import("./script_files/native.js");
+import './general.css'
+import './map-ui.css'
+import * as mapScript from './map.js'
+import * as weatherScript from './weather.js'
+import './search.js'
+import './native.js'
+
 function isBridgeSafe(weather) {
   const id = String(weather.conditionId);
   if (weather.temp <= 35) {

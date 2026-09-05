@@ -1,0 +1,19 @@
+{
+  "name": "sentry-navigation-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.2.2"
+  },
+  "dependencies": {
+    "@mapbox/polyline": "^1.2.1",
+    "@maptiler/client": "^1.8.0",
+    "maplibre-gl": "^3.6.0"
+  }
+}
