@@ -12,6 +12,12 @@ body {
             pointer-events: none;
         }
 
+        .custom-marker {
+            background-size: cover;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
         .search-card {
             position: fixed;
             top: 1rem;
@@ -73,6 +79,7 @@ body {
                     padding: 0.75rem 0;
                     color: oklch(var(--color-text-muted));
                     cursor: pointer;
+                    user-select: none;
 
                     &:hover {
                         color: oklch(var(--color-text-primary));

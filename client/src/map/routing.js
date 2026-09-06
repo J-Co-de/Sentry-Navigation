@@ -3,9 +3,15 @@ import { map } from "./core.js";
 import { pinnedPoints } from "./markers.js";
 
 export let route = {};
+let latestRequest = 0;
 
 export async function fetchRoute() {
-  if (pinnedPoints.length < 2) return;
+  if (pinnedPoints.length < 2) {
+    clearRoute();
+    return;
+  }
+
+  const requestId = ++latestRequest;
 
   const locations = pinnedPoints.map(({ coordinates: [lng, lat] }) => ({
     lat,
@@ -25,6 +31,8 @@ export async function fetchRoute() {
   if (!response.ok) throw new Error(`Route request failed: ${response.status}`);
 
   const data = await response.json();
+  if (requestId !== latestRequest) return;
+
   if (!data?.trip?.legs) {
     console.warn("No legs found in route response:", data);
     return;
@@ -55,8 +63,27 @@ export async function fetchRoute() {
   return data;
 }
 
+function clearRoute() {
+  try {
+    if (map.getLayer("route-line")) {
+      map.removeLayer("route-line");
+    }
+    if (map.getSource("route")) {
+      map.removeSource("route");
+    }
+  } catch (e) {
+    console.warn("Failed to clear route:", e);
+  }
+}
+
 function drawRoute(coords) {
-  function addOrUpdate() {
+  // Defer until style finishes loading (fires exactly once)
+  if (!map.isStyleLoaded()) {
+    map.once("style.load", () => drawRoute(coords));
+    return;
+  }
+
+  try {
     if (map.getSource("route")) {
       map.getSource("route").setData({
         type: "Feature",
@@ -83,11 +110,7 @@ function drawRoute(coords) {
         },
       });
     }
-  }
-
-  if (map.isStyleLoaded()) {
-    addOrUpdate();
-  } else {
-    map.once("style.load", addOrUpdate);
+  } catch (e) {
+    console.error("Failed to draw route:", e);
   }
 }

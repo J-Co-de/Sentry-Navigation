@@ -12,7 +12,43 @@ const TYPE_ICONS = {
   municipality: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="result-icon"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg>`,
   // Globe icon for broader places such as cities or regions.
   place: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="result-icon"><path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/><path d="M7 3.34V5a3 3 0 0 0 3 3a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2c0-1.1.9-2 2-2h3.17"/><path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/><circle cx="12" cy="12" r="10"/></svg>`,
+  // Storefront icon for shops and amenities.
+  shop: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="result-icon"><path d="M3 9h18l-1.5-5h-15z"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/><path d="M3 9a3 3 0 0 0 6 0a3 3 0 0 0 6 0a3 3 0 0 0 6 0"/></svg>`,
+  // Utensils icon for restaurants and cafes.
+  restaurant: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="result-icon"><path d="M7 2v20"/><path d="M3 2v6a4 4 0 0 0 8 0V2"/><path d="M19 2v20"/><path d="M19 2a4 4 0 0 0-4 4v5h4"/></svg>`,
+  // Road icon for streets and roads.
+  street: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="result-icon"><path d="m19 3-5 18"/><path d="M5 3l5 18"/><path d="M12 3v3"/><path d="M12 9v3"/><path d="M12 15v3"/></svg>`,
+  // Area icon for neighborhoods and districts.
+  neighbourhood: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="result-icon"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-5h6v5"/><path d="M8 11h1"/><path d="M15 11h1"/></svg>`,
 };
+
+let userLocation = null;
+
+getLocation()
+  .then(loc => {
+    userLocation = loc;
+    initializeMarker(loc); // or store it for later
+  })
+  .catch(err => console.warn(err.message));
+
+
+TYPE_ICONS.amenity = TYPE_ICONS.poi;
+TYPE_ICONS.fast_food = TYPE_ICONS.restaurant;
+TYPE_ICONS.cafe = TYPE_ICONS.restaurant;
+TYPE_ICONS.neighborhood = TYPE_ICONS.neighbourhood;
+TYPE_ICONS.quarter = TYPE_ICONS.neighbourhood;
+TYPE_ICONS.locality = TYPE_ICONS.locality;
+TYPE_ICONS.town = TYPE_ICONS.locality;
+TYPE_ICONS.village = TYPE_ICONS.locality;
+TYPE_ICONS.hamlet = TYPE_ICONS.locality;
+TYPE_ICONS.city = TYPE_ICONS.municipality;
+TYPE_ICONS.district = TYPE_ICONS.municipality;
+TYPE_ICONS.county = TYPE_ICONS.municipality;
+TYPE_ICONS.region = TYPE_ICONS.place;
+TYPE_ICONS.state = TYPE_ICONS.place;
+TYPE_ICONS.country = TYPE_ICONS.place;
+TYPE_ICONS.continent = TYPE_ICONS.place;
+TYPE_ICONS.unknown = TYPE_ICONS.place;
 
 export function getTypeIcon(feature) {
   const type = getCategory(feature);
@@ -160,6 +196,7 @@ export function getDistanceKm(lng1, lat1, lng2, lat2) {
 
   return radius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
+
 function getLocation() {
   if (!navigator.geolocation) {
     return Promise.reject(
@@ -188,27 +225,34 @@ function getLocation() {
         }
       },
       {
-        enableHighAccuracy: true,
+        enableHighAccuracy: false,
         timeout: 10000,
         maximumAge: 0,
       },
     );
   });
 }
+
 export async function flyToPlace(result, zoom = 10) {
   const [lon, lat] = result;
   const center = map.getCenter();
   const distance = getDistanceKm(center.lng, center.lat, lon, lat);
 
-  try {
-    const currentLocation = await getLocation();
-    initializeMarker(currentLocation);
-  } catch (error) {
-    console.warn(error.message);
+  // 1. Get current location first
+
+  // 2. Add markers AFTER all async work is done
+  if (userLocation) {
+    initializeMarker(userLocation);
   }
 
   initializeMarker([lon, lat]);
-  fetchRoute();
+
+  // 3. Wait for markers to exist before routing
+  await Promise.resolve(); // allow DOM/MapLibre to finish marker rendering
+
+  const route = await fetchRoute();
+
+  // 4. Only animate AFTER route is drawn
   if (distance > 150) {
     map.jumpTo({ center: [lon, lat], zoom });
     return;

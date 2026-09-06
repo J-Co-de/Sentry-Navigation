@@ -6,15 +6,15 @@ export let pinnedPoints = [];
 
 let markerIdCounter = 0;
 const markers = new Map();
+let userLocationMarkerId = null;
+
 export default function initializeMarker(lngLat) {
   const [lng, lat] = lngLat;
   const exists = pinnedPoints.some(
     (p) => p.coordinates[0] === lng && p.coordinates[1] === lat,
   );
   if (!exists) {
-    const marker = new maplibregl.Marker({ draggable: true })
-      .setLngLat([lng, lat])
-      .addTo(map);
+    const marker = new maplibregl.Marker().setLngLat([lng, lat]).addTo(map);
 
     const markerId = ++markerIdCounter;
     markers.set(markerId, marker);
@@ -24,10 +24,15 @@ export default function initializeMarker(lngLat) {
       const idx = pinnedPoints.findIndex((p) => p.id === markerId);
       if (idx !== -1) pinnedPoints.splice(idx, 1);
       markers.delete(markerId);
+      if (userLocationMarkerId === markerId) userLocationMarkerId = null;
       marker.remove();
       e.stopPropagation();
       fetchRoute();
     });
+    return markerId;
   }
-  console.log(pinnedPoints);
+
+  return pinnedPoints.find(
+    (p) => p.coordinates[0] === lng && p.coordinates[1] === lat,
+  )?.id;
 }
