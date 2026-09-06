@@ -1,61 +1,8 @@
 import polyline from "@mapbox/polyline";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
+import { map } from "./core.js";
+import { pinnedPoints } from "./markers.js";
 
-export let pinnedPoints = [];
 export let route = {};
-
-let markerIdCounter = 0;
-const markers = new Map();
-
-export const map = new maplibregl.Map({
-  container: "map",
-  style:
-    "https://api.maptiler.com/maps/streets-v2-dark/style.json?key=Ejb6rQSPI4GfmBnOhiEQ",
-  center: [-95.9928, 36.0607],
-  zoom: 11,
-});
-
-// Add user's current position as the first pinned point
-
-map.on("click", (e) => {
-  const { lng, lat } = e.lngLat;
-  const marker = new maplibregl.Marker({ draggable: true })
-    .setLngLat([lng, lat])
-    .addTo(map);
-
-  const markerId = ++markerIdCounter;
-  markers.set(markerId, marker);
-  pinnedPoints.push({ lng, lat, markerId });
-
-  fetchRoute().then((data) => {
-    route = data;
-  });
-
-  marker.on("dragend", () => {
-    const lngLat = marker.getLngLat();
-    const idx = pinnedPoints.findIndex((p) => p.markerId === markerId);
-    if (idx !== -1) {
-      pinnedPoints[idx].lng = lngLat.lng;
-      pinnedPoints[idx].lat = lngLat.lat;
-    }
-    fetchRoute().then((data) => {
-      route = data;
-    });
-    console.log(`New position: ${lngLat.lng}, ${lngLat.lat}`);
-  });
-
-  marker.getElement().addEventListener("click", function (e) {
-    const idx = pinnedPoints.findIndex((p) => p.markerId === markerId);
-    if (idx !== -1) pinnedPoints.splice(idx, 1);
-    markers.delete(markerId);
-    marker.remove();
-    e.stopPropagation();
-    fetchRoute().then((data) => {
-      route = data;
-    });
-  });
-});
 
 export async function fetchRoute() {
   if (pinnedPoints.length < 2) return;
@@ -101,6 +48,7 @@ export async function fetchRoute() {
     console.warn("No coordinates decoded; route not drawn");
   }
 
+  route = data;
   return data;
 }
 

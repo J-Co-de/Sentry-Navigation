@@ -62,6 +62,36 @@ body {
                     }
                 }
             }
+
+            .output {
+                padding: 0.75rem;
+
+                li {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    padding: 0.75rem 0;
+                    color: oklch(var(--color-text-muted));
+                    cursor: pointer;
+
+                    &:hover {
+                        color: oklch(var(--color-text-primary));
+                    }
+
+                    .result-icon {
+                        flex-shrink: 0;
+                        width: 1.25rem;
+                        height: 1.25rem;
+                        color: oklch(var(--color-accent));
+                    }
+
+                    .result-label {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+            }
         }
     }
 

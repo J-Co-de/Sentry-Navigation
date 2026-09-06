@@ -1,8 +1,9 @@
 import './general.css'
 import './map-ui.css'
-import * as mapScript from './map.js'
-import * as weatherScript from './weather.js'
-import './search.js'
+import { setupMarkerClickHandler } from './map/markers.js'
+import { fetchRoute } from './map/routing.js'
+import { getWeather, alwaysFreeze, conditionalFreeze } from './weather/api.js'
+import { setupSearchListeners } from './search/search.js'
 import './native.js'
 
 function isBridgeSafe(weather) {
@@ -14,13 +15,13 @@ function isBridgeSafe(weather) {
       }
     }
 
-    let isFroze = weatherScript.conditionalFreeze.some((regex) =>
+    let isFroze = conditionalFreeze.some((regex) =>
       regex.test(id),
     );
     if (isFroze) return false;
 
     if (weather.temp <= 32) {
-      isFroze = weatherScript.alwaysFreeze.some((regex) => regex.test(id));
+      isFroze = alwaysFreeze.some((regex) => regex.test(id));
       if (isFroze) return false;
     }
   }
@@ -30,14 +31,18 @@ function isBridgeSafe(weather) {
 
 async function init() {
   try {
-    const weather = await weatherScript.getWeather();
+    // Set up map interactions
+    setupMarkerClickHandler();
+    setupSearchListeners();
+
+    const weather = await getWeather();
     console.log(
       isBridgeSafe(weather)
         ? "You can use bridges!"
         : "You can not use bridges!",
     );
 
-    const routeData = await mapScript.fetchRoute();
+    const routeData = await fetchRoute();
     console.log("Route data:", routeData);
   } catch (error) {
     console.error("Initialization failed:", error);
