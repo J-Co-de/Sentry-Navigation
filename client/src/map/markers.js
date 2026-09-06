@@ -6,38 +6,28 @@ export let pinnedPoints = [];
 
 let markerIdCounter = 0;
 const markers = new Map();
-
-export function setupMarkerClickHandler() {
-  map.on("click", (e) => {
-    const { lng, lat } = e.lngLat;
+export default function initializeMarker(lngLat) {
+  const [lng, lat] = lngLat;
+  const exists = pinnedPoints.some(
+    (p) => p.coordinates[0] === lng && p.coordinates[1] === lat,
+  );
+  if (!exists) {
     const marker = new maplibregl.Marker({ draggable: true })
       .setLngLat([lng, lat])
       .addTo(map);
 
     const markerId = ++markerIdCounter;
     markers.set(markerId, marker);
-    pinnedPoints.push({ lng, lat, markerId });
-
-    fetchRoute();
-
-    marker.on("dragend", () => {
-      const lngLat = marker.getLngLat();
-      const idx = pinnedPoints.findIndex((p) => p.markerId === markerId);
-      if (idx !== -1) {
-        pinnedPoints[idx].lng = lngLat.lng;
-        pinnedPoints[idx].lat = lngLat.lat;
-      }
-      fetchRoute();
-      console.log(`New position: ${lngLat.lng}, ${lngLat.lat}`);
-    });
+    pinnedPoints.push({ coordinates: [lng, lat], id: markerId });
 
     marker.getElement().addEventListener("click", function (e) {
-      const idx = pinnedPoints.findIndex((p) => p.markerId === markerId);
+      const idx = pinnedPoints.findIndex((p) => p.id === markerId);
       if (idx !== -1) pinnedPoints.splice(idx, 1);
       markers.delete(markerId);
       marker.remove();
       e.stopPropagation();
       fetchRoute();
     });
-  });
+  }
+  console.log(pinnedPoints);
 }

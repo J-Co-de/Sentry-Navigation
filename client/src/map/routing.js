@@ -7,7 +7,10 @@ export let route = {};
 export async function fetchRoute() {
   if (pinnedPoints.length < 2) return;
 
-  const locations = pinnedPoints.map((p) => ({ lat: p.lat, lon: p.lng }));
+  const locations = pinnedPoints.map(({ coordinates: [lng, lat] }) => ({
+    lat,
+    lon: lng,
+  }));
 
   const response = await fetch("/route", {
     method: "POST",

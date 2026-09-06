@@ -1,6 +1,5 @@
 import './general.css'
 import './map-ui.css'
-import { setupMarkerClickHandler } from './map/markers.js'
 import { fetchRoute } from './map/routing.js'
 import { getWeather, alwaysFreeze, conditionalFreeze } from './weather/api.js'
 import { setupSearchListeners } from './search/search.js'
@@ -32,7 +31,6 @@ function isBridgeSafe(weather) {
 async function init() {
   try {
     // Set up map interactions
-    setupMarkerClickHandler();
     setupSearchListeners();
 
     const weather = await getWeather();

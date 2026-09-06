@@ -1,5 +1,6 @@
 import { map } from "../map/core.js";
-
+import initializeMarker from "../map/markers.js";
+import { fetchRoute } from "../map/routing.js";
 const TYPE_ICONS = {
   // Map pin icon for points of interest.
   poi: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="result-icon"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>`,
@@ -14,9 +15,31 @@ const TYPE_ICONS = {
 };
 
 export function getTypeIcon(feature) {
-  const type =
-    feature.properties?.category || feature.place_type?.[0] || "place";
+  const type = getCategory(feature);
   return TYPE_ICONS[type] || TYPE_ICONS.place;
+}
+
+export function getCategory(feature) {
+  const props = feature.properties || {};
+
+  // 1. POI-specific fields (strongest signal)
+  if (props.category) return props.category;
+  if (props.subclass) return props.subclass;
+  if (props.class) return props.class;
+
+  // 2. MapTiler geocoder POI fallback
+  if (feature.place_type?.[0] === "poi") return "poi";
+
+  // 3. Geographic place designation (city, town, village, quarter)
+  if (props.place_designation) return props.place_designation;
+
+  // 4. MapTiler place_type_name (locality, region, country)
+  if (feature.place_type_name?.length) return feature.place_type_name[0];
+
+  // 5. MapTiler place_type (place, region, country)
+  if (feature.place_type?.length) return feature.place_type[0];
+
+  return "unknown";
 }
 
 export function formatPlaceName(feature) {
@@ -60,24 +83,68 @@ export function renderResults(features) {
     outputList.appendChild(item);
   });
 }
-
 export function getZoomLevel(feature) {
-  const category =
-    feature.properties?.category || feature.place_type?.[0] || "place";
+  const category = getCategory(feature);
+  console.log("feature:", feature);
+  console.log("category:", category);
 
   switch (category) {
+    // POIs
     case "poi":
-    case "address":
-      return 18;
-    case "locality":
+    case "amenity":
+    case "shop":
+    case "restaurant":
+    case "fast_food":
+    case "cafe":
       return 16;
+
+    // Addresses & streets
+    case "address":
+    case "street":
+      return 17;
+
+    // Neighbourhood-level
+    case "neighbourhood":
+      return 16;
+
+    // Quarter (OSM: place=quarter)
+    case "quarter":
+      return 14;
+
+    // Locality / town / village
+    case "locality":
+    case "town":
+    case "village":
+    case "hamlet":
+      return 15;
+
+    // Municipality / city
     case "municipality":
+    case "city":
       return 13;
-    case "place":
-      console.log(category);
-      return 10;
+
+    // District / county
+    case "district":
+    case "county":
+      return 11;
+
+    // Region / state
+    case "region":
+    case "state":
+      return 8;
+
+    // Country
+    case "country":
+      return 4;
+
+    // Continent (rare but possible)
+    case "continent":
+      return 2;
+
+    // Fallback
+    case "unknown":
     default:
-      return 0;
+      return 10;
   }
 }
 
@@ -93,14 +160,57 @@ export function getDistanceKm(lng1, lat1, lng2, lat2) {
 
   return radius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
+function getLocation() {
+  if (!navigator.geolocation) {
+    return Promise.reject(
+      new Error("Geolocation is not supported by your browser."),
+    );
+  }
 
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve([position.coords.longitude, position.coords.latitude]);
+      },
+      (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            reject(new Error("User denied the request for Geolocation."));
+            break;
+          case error.POSITION_UNAVAILABLE:
+            reject(new Error("Location information is unavailable."));
+            break;
+          case error.TIMEOUT:
+            reject(new Error("The request to get user location timed out."));
+            break;
+          default:
+            reject(new Error("An unknown geolocation error occurred."));
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      },
+    );
+  });
+}
 export async function flyToPlace(result, zoom = 10) {
   const [lon, lat] = result;
   const center = map.getCenter();
   const distance = getDistanceKm(center.lng, center.lat, lon, lat);
 
+  try {
+    const currentLocation = await getLocation();
+    initializeMarker(currentLocation);
+  } catch (error) {
+    console.warn(error.message);
+  }
+
+  initializeMarker([lon, lat]);
+  fetchRoute();
   if (distance > 150) {
-    map.jumpTo({ center: [lon, lat], zoom: 20 });
+    map.jumpTo({ center: [lon, lat], zoom });
     return;
   }
 
