@@ -3,7 +3,6 @@ import './map-ui.css'
 import { fetchRoute } from './map/routing.js'
 import { getWeather, alwaysFreeze, conditionalFreeze } from './weather/api.js'
 import { setupSearchListeners } from './search/search.js'
-import './native.js'
 
 function isBridgeSafe(weather) {
   const id = String(weather.conditionId);

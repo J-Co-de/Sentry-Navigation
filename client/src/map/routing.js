@@ -77,11 +77,6 @@ function clearRoute() {
 }
 
 function drawRoute(coords) {
-  // Defer until style finishes loading (fires exactly once)
-  if (!map.isStyleLoaded()) {
-    map.once("style.load", () => drawRoute(coords));
-    return;
-  }
 
   try {
     if (map.getSource("route")) {
@@ -90,6 +85,7 @@ function drawRoute(coords) {
         properties: {},
         geometry: { type: "LineString", coordinates: coords },
       });
+      console.log("it worked continue");
     } else {
       map.addSource("route", {
         type: "geojson",
@@ -109,6 +105,7 @@ function drawRoute(coords) {
           "line-width": 5,
         },
       });
+      console.log("it worked start");
     }
   } catch (e) {
     console.error("Failed to draw route:", e);

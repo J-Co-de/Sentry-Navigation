@@ -25,7 +25,7 @@ export async function searchPlace(query) {
 
   console.log(feature.place_name, [lon, lat], zoom);
 
-  flyToPlace([lon, lat], zoom);
+  await flyToPlace([lon, lat], zoom);
   return [lon, lat];
 }
 

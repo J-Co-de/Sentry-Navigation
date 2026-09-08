@@ -1,5 +1,9 @@
 import { map } from "../map/core.js";
-import initializeMarker from "../map/markers.js";
+import initializeMarker, {
+  pinnedPoints,
+  setUserMarker,
+  clearDestinationMarkers,
+} from "../map/markers.js";
 import { fetchRoute } from "../map/routing.js";
 const TYPE_ICONS = {
   // Map pin icon for points of interest.
@@ -27,7 +31,11 @@ let userLocation = null;
 getLocation()
   .then(loc => {
     userLocation = loc;
-    initializeMarker(loc); // or store it for later
+    setUserMarker(loc);
+    // If the user searched before geolocation resolved, re-trigger routing
+    if (pinnedPoints.length > 1) {
+      fetchRoute();
+    }
   })
   .catch(err => console.warn(err.message));
 
@@ -121,8 +129,6 @@ export function renderResults(features) {
 }
 export function getZoomLevel(feature) {
   const category = getCategory(feature);
-  console.log("feature:", feature);
-  console.log("category:", category);
 
   switch (category) {
     // POIs
@@ -238,21 +244,23 @@ export async function flyToPlace(result, zoom = 10) {
   const center = map.getCenter();
   const distance = getDistanceKm(center.lng, center.lat, lon, lat);
 
-  // 1. Get current location first
-
-  // 2. Add markers AFTER all async work is done
+  // 1. Ensure the user location pin is present (if geolocation resolved)
   if (userLocation) {
-    initializeMarker(userLocation);
+    setUserMarker(userLocation);
   }
 
+  // 2. Remove any previous destination markers (keeps user pin)
+  clearDestinationMarkers();
+
+  // 3. Add the new destination marker
   initializeMarker([lon, lat]);
 
-  // 3. Wait for markers to exist before routing
+  // 4. Wait for markers to exist before routing
   await Promise.resolve(); // allow DOM/MapLibre to finish marker rendering
 
   const route = await fetchRoute();
 
-  // 4. Only animate AFTER route is drawn
+  // 5. Only animate AFTER route is drawn
   if (distance > 150) {
     map.jumpTo({ center: [lon, lat], zoom });
     return;

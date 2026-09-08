@@ -36,3 +36,31 @@ export default function initializeMarker(lngLat) {
     (p) => p.coordinates[0] === lng && p.coordinates[1] === lat,
   )?.id;
 }
+
+/**
+ * Register (or re-register) the user's current-location marker so
+ * clearDestinationMarkers knows which pin to preserve.
+ */
+export function setUserMarker(lngLat) {
+  const id = initializeMarker(lngLat);
+  userLocationMarkerId = id;
+}
+
+/**
+ * Remove every pinned marker EXCEPT the user-location marker.
+ * Keeps pinnedPoints & the internal marker Map in sync.
+ */
+export function clearDestinationMarkers() {
+  const toRemove = [];
+  for (const [id, marker] of markers) {
+    if (id !== userLocationMarkerId) toRemove.push(id);
+  }
+  for (const id of toRemove) {
+    const marker = markers.get(id);
+    if (marker) {
+      marker.remove();
+      markers.delete(id);
+    }
+  }
+  pinnedPoints = pinnedPoints.filter((p) => p.id === userLocationMarkerId);
+}
