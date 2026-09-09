@@ -23,7 +23,25 @@ export async function fetchRoute() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       locations,
-      costing: "auto",
+      costing: "sentry",
+      costing_options: {
+        sentry: {
+          safety_options: {
+            road_class_factor: [0.95, 0.95, 1.05, 1.1, 1.25, 1.35, 1.3, 1.6],
+            night_penalty: 1.15,
+            fog_penalty: 1.3,
+            snow_penalty: 1.5,
+            icing_penalty: 2.0,
+            safety_vs_speed_balance: 0.7,
+            is_night: true,
+            temperature_celsius: -2,
+            rain_mm_per_hour: 0.0,
+            snow_mm_per_hour: 3.0,
+            visibility_meters: 400,
+            wind_speed_mps: 12,
+          },
+        },
+      },
       directions_options: { units: "miles" },
     }),
   });
@@ -77,7 +95,6 @@ function clearRoute() {
 }
 
 function drawRoute(coords) {
-
   try {
     if (map.getSource("route")) {
       map.getSource("route").setData({

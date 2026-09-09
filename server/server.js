@@ -7,8 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/route", async (req, res) => {
-  console.log("Incoming body:", req.body);
-  try {
+    try {
     const response = await fetch("http://localhost:8002/route", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
