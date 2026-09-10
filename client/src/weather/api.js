@@ -1,6 +1,6 @@
 import { alwaysFreeze, conditionalFreeze } from "./conditions.js";
 
-const apiKey = "855e80a07a1ba9c76233de0a8841350d";
+const apiKey = import.meta.env.VITE_OWM_KEY;
 const city = "Glenpool";
 const units = "Imperial";
 

@@ -1,18 +1,21 @@
 # Dependencies
 node_modules/
-Safety-Navigation/node_modules/
 
-# Valhalla large data files
-valhalla/routing-valhalla/valhalla_tiles/
-valhalla/routing-valhalla/*.tar
-valhalla/routing-valhalla/*.pbf
-valhalla/routing-valhalla/*.sqlite
-valhalla/routing-valhalla/elevation_data/
+# Build output
+dist/
+dist-ssr/
 
-# Environment variables
+# Environment variables (keep .env.example but not real keys)
 .env
 .env.local
 .env.*.local
+
+# Valhalla generated data (large binaries)
+valhalla/routing-valhalla/valhalla_tiles/
+valhalla/routing-valhalla/valhalla_tiles.tar
+valhalla/routing-valhalla/*.osm.pbf
+valhalla/routing-valhalla/*.sqlite
+valhalla/routing-valhalla/elevation_data/
 
 # OS files
 .DS_Store
@@ -20,6 +23,9 @@ Thumbs.db
 
 # IDE
 .vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/c_cpp_properties.json
 .idea/
 
 # Logs

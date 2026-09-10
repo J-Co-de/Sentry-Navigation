@@ -10,7 +10,7 @@
     "use_lru_mem_cache": false,
     "lru_mem_cache_hard_control": false,
     "use_simple_mem_cache": false,
-    "concurrency": "12",
+    "concurrency": 12,
     "tile_dir": "/custom_files/valhalla_tiles",
     "tile_extract": "/custom_files/valhalla_tiles.tar",
     "traffic_extract": "/custom_files/traffic.tar",

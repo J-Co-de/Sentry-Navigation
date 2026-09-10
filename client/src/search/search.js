@@ -6,7 +6,7 @@ import {
   flyToPlace,
 } from "./ui.js";
 
-config.apiKey = "Ejb6rQSPI4GfmBnOhiEQ";
+config.apiKey = import.meta.env.VITE_MAPTILER_KEY;
 
 export async function searchPlace(query) {
   const center = map.getCenter();
