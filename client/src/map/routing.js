@@ -23,7 +23,12 @@ export async function fetchRoute() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       locations,
-      costing: "auto",
+      costing: "sentry",
+      costing_options: {
+        sentry: {
+          weight: 3.0,
+        },
+      },
       directions_options: { units: "miles" },
     }),
   });
@@ -77,7 +82,6 @@ function clearRoute() {
 }
 
 function drawRoute(coords) {
-
   try {
     if (map.getSource("route")) {
       map.getSource("route").setData({

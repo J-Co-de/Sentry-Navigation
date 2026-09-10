@@ -6,7 +6,7 @@ services:
       - "8002:8002"
     volumes:
       # Relative path avoids problems with spaces in "Web Projects\Sentry Navigation"
-      - ./valhalla/routing-valhalla:/custom_files
+      - ./routing-valhalla:/custom_files
     command: build_tiles
     environment:
       # Defined (empty) so configure_valhalla.sh never hits "tile_urls: unbound variable"

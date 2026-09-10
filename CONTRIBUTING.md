@@ -53,7 +53,7 @@ docker compose down                 # Stop local containers
 - `client/src/search/ui.js`: Search result rendering, icons, geolocation, and destination selection
 - `client/src/weather/`: Weather requests and bridge-safety logic
 - `server/server.js`: Express proxy from the client to Valhalla
-- `valhalla/routing-valhalla/`: Local Valhalla configuration, tiles, and elevation data
+- `routing-valhalla/`: Local Valhalla configuration, tiles, and elevation data
 
 ## Request Flow
 
